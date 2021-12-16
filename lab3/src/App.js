@@ -8,6 +8,10 @@ function App() {
   const [semester, setSemester] = useState(0);
   const [teacher, setTeacher] = useState("");
 
+
+  const [subjectToDelete, setSubjectToDelete] = useState("");
+  const [semesterToDelete, setSemesterToDelete] = useState(0);
+  
   const operationsDoc = `
     query MyQuery {
       marks_marks {
@@ -37,7 +41,8 @@ function App() {
     )
   })
 
-  const handleSubmit = (event) => {
+
+  const handleAddLine = (event) => {
     event.preventDefault();
     fetch(
       "https://kpiweb-lab3.herokuapp.com/v1/graphql",
@@ -67,10 +72,42 @@ function App() {
     })
   }
 
+
+  const HandleDeleteLine = ((event)=>{
+      event.preventDefault();
+      console.log(subjectToDelete + " " + +semesterToDelete);
+      fetch(
+        "https://kpiweb-lab3.herokuapp.com/v1/graphql",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            query: `
+              mutation MyMutation {
+                delete_marks_marks(where: {subject: {_eq: "${subjectToDelete}"}, _and: {semester: {_eq: ${parseInt(semesterToDelete)}}}}) {
+                  returning {
+                    id
+                    mark
+                    semester
+                    subject
+                    teacher
+                  }
+                }
+              }
+            `,
+            variables: {},
+            operationName: "MyMutation"
+          })
+        }
+      ).then(res => res.json())
+      .then((result) => {
+        console.log(result);
+      })
+  })
+
   return (
     <main>
     <div className="App">
-        <form onSubmit={handleSubmit} id="msform">
+        <form onSubmit={handleAddLine} id="msform">
             <fieldset>
                 <h2 className="fs-title">Create New Line</h2>
                 <input type="text" name="subject" placeholder="subject" value={subject} onChange={(e) => setSubject(e.target.value)}/>
@@ -78,6 +115,14 @@ function App() {
                 <input type="number" name="semester" placeholder="semester" value={semester} onChange={(e) => setSemester(e.target.value)}/>
                 <input type="text" name="teacher" placeholder="teacher" value={teacher} onChange={(e) => setTeacher(e.target.value)}/>
                 <input type="submit" name="next" className="next action-button" value="Add" />
+            </fieldset>
+        </form>
+        <form onSubmit={HandleDeleteLine} id="msform2">
+            <fieldset>
+                <h2 className="fs-title">Delete Line (Enter subject and semester)</h2>
+                <input type="text" name="subject" placeholder="subject" value={subjectToDelete} onChange={(e) => setSubjectToDelete(e.target.value)}/>
+                <input type="number" name="semester" placeholder="semester" value={semesterToDelete} onChange={(e) => setSemesterToDelete(e.target.value)}/>
+                <input type="submit" name="next" className="next action-button" value="Delete" />
             </fieldset>
         </form>
         <table>
