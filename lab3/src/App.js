@@ -41,6 +41,7 @@ function App() {
     )
   })
 
+
   const handleAddLine = (event) => {
     event.preventDefault();
     fetch(
@@ -70,6 +71,7 @@ function App() {
       console.log(result);
     })
   }
+
 
   const HandleDeleteLine = ((event)=>{
       event.preventDefault();
