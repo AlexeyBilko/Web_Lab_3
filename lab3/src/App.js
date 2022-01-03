@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 
+
 function App() {
   const [marks, setMarks] = useState([]);
   const [subject, setSubject] = useState("");
@@ -11,7 +12,6 @@ function App() {
 
   const [subjectToDelete, setSubjectToDelete] = useState("");
   const [semesterToDelete, setSemesterToDelete] = useState(0);
-  
   const operationsDoc = `
     query MyQuery {
       marks_marks {
@@ -25,7 +25,7 @@ function App() {
 
   useEffect(()=>{
     fetch(
-      "https://kpiweb-lab3.herokuapp.com/v1/graphql",
+      process.env.REACT_APP_TO_SEND,
       {
         method: "POST",
         body: JSON.stringify({
@@ -45,7 +45,7 @@ function App() {
   const handleAddLine = (event) => {
     event.preventDefault();
     fetch(
-      "https://kpiweb-lab3.herokuapp.com/v1/graphql",
+      process.env.REACT_APP_TO_SEND,
       {
         method: "POST",
         body: JSON.stringify({
@@ -72,10 +72,9 @@ function App() {
     })
   }
 
-
   const HandleDeleteLine = ((event)=>{
       event.preventDefault();
-      console.log(subjectToDelete + " " + +semesterToDelete);
+      let tmp_semester = parseInt(semesterToDelete);
       fetch(
         "https://kpiweb-lab3.herokuapp.com/v1/graphql",
         {
@@ -83,7 +82,7 @@ function App() {
           body: JSON.stringify({
             query: `
               mutation MyMutation {
-                delete_marks_marks(where: {subject: {_eq: "${subjectToDelete}"}, _and: {semester: {_eq: ${parseInt(semesterToDelete)}}}}) {
+                delete_marks_marks(where: {subject: {_eq: "${subjectToDelete}"}, _and: {semester: {_eq: ${tmp_semester}}}}) {
                   returning {
                     id
                     mark
