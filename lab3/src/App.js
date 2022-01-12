@@ -12,6 +12,7 @@ function App() {
 
   const [subjectToDelete, setSubjectToDelete] = useState("");
   const [semesterToDelete, setSemesterToDelete] = useState(0);
+
   const operationsDoc = `
     query MyQuery {
       marks_marks {
@@ -72,6 +73,7 @@ function App() {
       console.log(result);
     })
   }
+
 
   const HandleDeleteLine = ((event)=>{
       event.preventDefault();
