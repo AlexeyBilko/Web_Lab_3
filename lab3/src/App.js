@@ -41,9 +41,10 @@ function App() {
     )
   })
 
-
   const handleAddLine = (event) => {
     event.preventDefault();
+    let intMark = parseInt(mark);
+    let intSemester = parseInt(semester);
     fetch(
       process.env.REACT_APP_TO_SEND,
       {
@@ -51,7 +52,7 @@ function App() {
         body: JSON.stringify({
           query: `
             mutation MyMutation {
-              insert_marks_marks(objects: {mark: ${parseInt(mark)}, semester: ${parseInt(semester)}, subject: "${subject}", teacher: "${teacher}"}){
+              insert_marks_marks(objects: {mark: ${intMark}, semester: ${intSemester}, subject: "${subject}", teacher: "${teacher}"}){
                 returning {
                   id,
                   mark,
@@ -74,15 +75,15 @@ function App() {
 
   const HandleDeleteLine = ((event)=>{
       event.preventDefault();
-      let tmp_semester = parseInt(semesterToDelete);
+      let intSemester = parseInt(semesterToDelete);
       fetch(
-        "https://kpiweb-lab3.herokuapp.com/v1/graphql",
+        process.env.REACT_APP_TO_SEND,
         {
           method: "POST",
           body: JSON.stringify({
             query: `
               mutation MyMutation {
-                delete_marks_marks(where: {subject: {_eq: "${subjectToDelete}"}, _and: {semester: {_eq: ${tmp_semester}}}}) {
+                delete_marks_marks(where: {subject: {_eq: "${subjectToDelete}"}, _and: {semester: {_eq: ${intSemester}}}}) {
                   returning {
                     id
                     mark
