@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import './App.css';
+import DeleteRow from './DeleteRow';
+
 
 function App() {
   const [marks, setMarks] = useState([]);
@@ -8,10 +10,8 @@ function App() {
   const [semester, setSemester] = useState(0);
   const [teacher, setTeacher] = useState("");
 
+  const [error, setError] = useState(false);
 
-  const [subjectToDelete, setSubjectToDelete] = useState("");
-  const [semesterToDelete, setSemesterToDelete] = useState(0);
-  
   const operationsDoc = `
     query MyQuery {
       marks_marks {
@@ -25,7 +25,7 @@ function App() {
 
   useEffect(()=>{
     fetch(
-      "https://kpiweb-lab3.herokuapp.com/v1/graphql",
+      process.env.REACT_APP_TO_SEND,
       {
         method: "POST",
         body: JSON.stringify({
@@ -39,19 +39,24 @@ function App() {
           setMarks(result.data.marks_marks);
       }
     )
+    .catch((excption) => {
+      console.log("Error");
+      setError(true);
+    })
   })
-
 
   const handleAddLine = (event) => {
     event.preventDefault();
+    let intMark = parseInt(mark);
+    let intSemester = parseInt(semester);
     fetch(
-      "https://kpiweb-lab3.herokuapp.com/v1/graphql",
+      process.env.REACT_APP_TO_SEND,
       {
         method: "POST",
         body: JSON.stringify({
           query: `
             mutation MyMutation {
-              insert_marks_marks(objects: {mark: ${parseInt(mark)}, semester: ${parseInt(semester)}, subject: "${subject}", teacher: "${teacher}"}){
+              insert_marks_marks(objects: {mark: ${intMark}, semester: ${intSemester}, subject: "${subject}", teacher: "${teacher}"}){
                 returning {
                   id,
                   mark,
@@ -70,39 +75,15 @@ function App() {
     .then((result) => {
       console.log(result);
     })
+    .catch((excption) => {
+      console.log("Error");
+      setError(true);
+    })
+    setMark(0);
+    setSemester(0);
+    setSubject("");
+    setTeacher("");
   }
-
-
-  const HandleDeleteLine = ((event)=>{
-      event.preventDefault();
-      console.log(subjectToDelete + " " + +semesterToDelete);
-      fetch(
-        "https://kpiweb-lab3.herokuapp.com/v1/graphql",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            query: `
-              mutation MyMutation {
-                delete_marks_marks(where: {subject: {_eq: "${subjectToDelete}"}, _and: {semester: {_eq: ${parseInt(semesterToDelete)}}}}) {
-                  returning {
-                    id
-                    mark
-                    semester
-                    subject
-                    teacher
-                  }
-                }
-              }
-            `,
-            variables: {},
-            operationName: "MyMutation"
-          })
-        }
-      ).then(res => res.json())
-      .then((result) => {
-        console.log(result);
-      })
-  })
 
   return (
     <main>
@@ -117,14 +98,9 @@ function App() {
                 <input type="submit" name="next" className="next action-button" value="Add" />
             </fieldset>
         </form>
-        <form onSubmit={HandleDeleteLine} id="msform2">
-            <fieldset>
-                <h2 className="fs-title">Delete Line (Enter subject and semester)</h2>
-                <input type="text" name="subject" placeholder="subject" value={subjectToDelete} onChange={(e) => setSubjectToDelete(e.target.value)}/>
-                <input type="number" name="semester" placeholder="semester" value={semesterToDelete} onChange={(e) => setSemesterToDelete(e.target.value)}/>
-                <input type="submit" name="next" className="next action-button" value="Delete" />
-            </fieldset>
-        </form>
+        <div style={{display: error ? "block" : "none" }} className="errorSend">
+          <label>Fetch error</label>
+        </div>
         <table>
           <thead>
             <tr>
@@ -132,16 +108,18 @@ function App() {
               <th>Mark</th>
               <th>Semester</th>
               <th>Teacher</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
             {marks.map(item => {
               return (
-                <tr key={item.subject}>
+                <tr key={item.id}>
                   <td>{ item.subject }</td>
                   <td>{ item.mark }</td>
                   <td>{ item.semester }</td>
                   <td>{ item.teacher }</td>
+                  <td><DeleteRow itemtodelete={item}></DeleteRow></td>
                 </tr>
               );
             })}
