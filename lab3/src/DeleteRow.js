@@ -16,6 +16,7 @@ const DeleteRow = (props) => {
                     semester
                     subject
                     teacher
+                    user_id
                   }
                 }
               }

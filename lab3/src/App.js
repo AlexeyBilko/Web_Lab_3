@@ -10,6 +10,8 @@ function App() {
   const [semester, setSemester] = useState(0);
   const [teacher, setTeacher] = useState("");
 
+  const [error, setError] = useState(false);
+
   const operationsDoc = `
     query MyQuery {
       marks_marks {
@@ -37,6 +39,10 @@ function App() {
           setMarks(result.data.marks_marks);
       }
     )
+    .catch((excption) => {
+      console.log("Error");
+      setError(true);
+    })
   })
 
   const handleAddLine = (event) => {
@@ -69,6 +75,10 @@ function App() {
     .then((result) => {
       console.log(result);
     })
+    .catch((excption) => {
+      console.log("Error");
+      setError(true);
+    })
     setMark(0);
     setSemester(0);
     setSubject("");
@@ -88,6 +98,9 @@ function App() {
                 <input type="submit" name="next" className="next action-button" value="Add" />
             </fieldset>
         </form>
+        <div style={{display: error ? "block" : "none" }} className="errorSend">
+          <label>Fetch error</label>
+        </div>
         <table>
           <thead>
             <tr>
