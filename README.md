@@ -1,5 +1,4 @@
 # Web_Lab_3
-Лабораторна робота №3
-Завдання - зробити Create, Delete, Read операції з будь якими сутностями, використовуючи
-Heroku Hasura Graphql
-Деплой - kpi-webpr-lab-3.vercel.app
+##Лабораторна робота №3
+##Завдання - зробити Create, Delete, Read операції з будь якими сутностями, використовуючи Heroku Hasura Graphql
+##Деплой - [Click here](kpi-webpr-lab-3.vercel.app)
